@@ -1,6 +1,18 @@
+/**
+* Modify Individual Contact Summary by relocating fields.
+*/
 cj(function ($) {
   'use strict';
   
+  /**
+  * Create accordion HTML.
+  * Accordion documentation: http://wiki.civicrm.org/confluence/display/CRMDOC/Accordions
+  *
+  * @param {string} id Element id for the whole accordion wrapper
+  * @param {string} headerId Element id for the accordion header
+  * @param {string} contentId Element id for the accordion content
+  * @return {string} Html of accordion
+  */
   function getAccordionHtml(id, headerId, contentId) {
     var html = '<div id="' + id + '" class="crm-accordion-wrapper crm-accordion_title-accordion collapsed">';
     html += '<div id="' + headerId + '" class="crm-accordion-header">';
@@ -13,10 +25,18 @@ cj(function ($) {
   }
   
   /**
-  * Wrap Communication preference from to closed accordion.
-  * Accordion documentation: http://wiki.civicrm.org/confluence/display/CRMDOC/Accordions
+  * Is this summary page for Individual Contact?
+  *
+  * @return {boolean} True if is Individual summary
   */
-  function communicationPreferenceToAccordion() {
+  function isIndividualContactSummary() {
+    return $('.crm-contact_type_label').text().trim() == 'Individual';
+  }
+  
+  /**
+  * Wrap Communication preference form to closed accordion.
+  */
+  function moveCommunicationPreferenceToAccordion() {
     //Reference to Communication preference form content
     var commPrefContainer = $('.crm-summary-comm-pref-block');
     
@@ -32,7 +52,10 @@ cj(function ($) {
     $('#comm-pref-accordion-body').append(commPrefContainer);
   }
   
-  function moveEmplyerAndJobTitle() {
+  /**
+  * Move Employer and Job title to accordion below Communication preference
+  */
+  function moveEmplyerAndJobTitleToAccordion() {
     //Create accordion wrapper html and add it to DOM after Communication preference accordion
     var html = getAccordionHtml('emplyerAndJobTitle-accordion', 'emplyerAndJobTitle-accordion-header', 'emplyerAndJobTitle-accordion-body');
     $('#comm-pref-accordion').after(html);
@@ -47,7 +70,42 @@ cj(function ($) {
     $('#emplyerAndJobTitle-accordion-header').text(title);
   }
   
-  communicationPreferenceToAccordion();
-  moveEmplyerAndJobTitle();
-
+  /**
+  * Move Source field below of CiviCRM ID / User ID field
+  */
+  function moveSourceFieldBelowContactId() {
+    var contactIdRow = $('.crm-contact-contact_id').parent().parent();
+    var sourceRow = $('.crm-contact_source').parent();
+    
+    contactIdRow.after(sourceRow);
+  }
+  
+  /**
+  * Move Demographics from bottom right to top right
+  */
+  function moveDemographicsToTop() {
+    var demographicsContainer = $('.crm-summary-demographic-block');
+    var contactIdContainer = $('.crm-contact-contact_id').parent().parent().parent().parent();
+    
+    contactIdContainer.before(demographicsContainer);
+  }
+  
+  /**
+  * Move Contact Id block from top right to bottom right
+  */
+  function moveContactIdBlockToBottom() {
+    var leftBottomContainer = $('#comm-pref-accordion').parent().next();
+    var contactIdContainer = $('.crm-contact-contact_id').parent().parent().parent().parent();
+    
+    leftBottomContainer.append(contactIdContainer);
+  }
+  
+  //Do modifications only id this Summary page is for Individual and not for Organisations or Household
+  if(isIndividualContactSummary()) {
+    moveCommunicationPreferenceToAccordion();
+    moveEmplyerAndJobTitleToAccordion();
+    moveSourceFieldBelowContactId();
+    moveDemographicsToTop();
+    moveContactIdBlockToBottom();
+  }
 });
