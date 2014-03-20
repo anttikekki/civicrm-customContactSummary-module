@@ -85,9 +85,9 @@ cj(function ($) {
   */
   function moveDemographicsToTop() {
     var demographicsContainer = $('.crm-summary-demographic-block');
-    var contactIdContainer = $('.crm-contact-contact_id').parent().parent().parent().parent();
+    var phoneContainer = $('#phone-block').parent();
     
-    contactIdContainer.before(demographicsContainer);
+    phoneContainer.after(demographicsContainer);
   }
   
   /**
@@ -100,12 +100,57 @@ cj(function ($) {
     leftBottomContainer.append(contactIdContainer);
   }
   
+  /**
+  * Add nickname to header name
+  */
+  function addNicknameToHeaderName() {
+    var nameInfo = CRM.customContactSummary.contactNameInfo;
+    
+    if(nameInfo.nick_name == 'null' || nameInfo.nick_name.length === 0) {
+      return;
+    }
+    
+    var name = nameInfo.first_name + ' "' + nameInfo.nick_name + '" ' + nameInfo.last_name;
+    $('.crm-summary-display_name').text(name);
+  }
+  
+  /**
+  * Remove nickname form field and it's edit area from form
+  */
+  function removeNicknameFormFieldBlock() {
+    $('.crm-contact-nick_name').parent().parent().parent().parent().parent().remove();;
+  }
+  
+  /**
+  * Move Phone/IM block one row down
+  */
+  function movePhoneContainerOneDown() {
+    var addressContainer = $('#address-block-2');
+    var phoneContainer = $('#phone-block').parent();
+    
+    addressContainer.after(phoneContainer);
+  }
+  
+  /**
+  * Move address block one row down
+  */
+  function moveAddressContainerOneDown() {
+    var addressContainer = $('#address-block-2');
+    var contactIdContainer = $('.crm-contact-contact_id').parent().parent().parent().parent();
+    
+    contactIdContainer.before(addressContainer);
+  }
+  
   //Do modifications only id this Summary page is for Individual and not for Organisations or Household
   if(isIndividualContactSummary()) {
     moveCommunicationPreferenceToAccordion();
     moveEmplyerAndJobTitleToAccordion();
     moveSourceFieldBelowContactId();
-    moveDemographicsToTop();
     moveContactIdBlockToBottom();
+    addNicknameToHeaderName();
+    removeNicknameFormFieldBlock();
+    moveDemographicsToTop();
+    movePhoneContainerOneDown();
+    moveAddressContainerOneDown();
   }
 });
