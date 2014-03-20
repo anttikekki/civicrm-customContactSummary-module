@@ -34,6 +34,15 @@ cj(function ($) {
   }
   
   /**
+  * Is this summary page for Organisation Contact?
+  *
+  * @return {boolean} True if is Organisation summary
+  */
+  function isOrganisationContactSummary() {
+    return $('.crm-contact_type_label').text().trim() == 'Organization';
+  }
+  
+  /**
   * Wrap Communication preference form to closed accordion.
   */
   function moveCommunicationPreferenceToAccordion() {
@@ -94,6 +103,11 @@ cj(function ($) {
   * Move Contact Id block from top right to bottom right
   */
   function moveContactIdBlockToBottom() {
+    //contactCardRight container is missing in Organisation summary
+    if(isOrganisationContactSummary()) {
+      $('#comm-pref-accordion').parent().after('<div class="contactCardRight"></div>');
+    }
+  
     var leftBottomContainer = $('#comm-pref-accordion').parent().next();
     var contactIdContainer = $('.crm-contact-contact_id').parent().parent().parent().parent();
     
@@ -110,15 +124,47 @@ cj(function ($) {
       return;
     }
     
-    var name = nameInfo.first_name + ' "' + nameInfo.nick_name + '" ' + nameInfo.last_name;
-    $('.crm-summary-display_name').text(name);
+    var name = '';
+    if(isOrganisationContactSummary()) {
+       name = nameInfo.organization_name + ' (' + nameInfo.nick_name + ')';
+    }
+    //Individual
+    else {
+      name = nameInfo.first_name + ' "' + nameInfo.nick_name + '" ' + nameInfo.last_name;
+    }
+    
+    var nameElement = $('.crm-summary-display_name');
+    var summaryLink = nameElement.find('.crm-summary-link');
+    
+    nameElement.text(name);
+    nameElement.prepend(summaryLink);
   }
   
   /**
   * Remove nickname form field and it's edit area from form
   */
   function removeNicknameFormFieldBlock() {
-    $('.crm-contact-nick_name').parent().parent().parent().parent().parent().remove();;
+    $('.crm-contact-nick_name').parent().parent().parent().parent().parent().remove();
+  }
+  
+  /**
+  * Remove nickname form field and removes inline editing from it's container
+  */
+  function removeNicknameFormFieldAndInlineEditing() {
+    var inlineEditingBlock = $('.crm-contact-nick_name').parent().parent().parent().parent().parent();
+    
+    //Remove nickname
+    $('.crm-contact-nick_name').parent().remove();
+    
+    //Move Legal name row out of inline editing
+    var legalNameRow = $('.crm-contact-legal_name').parent();
+    
+    //Remove old inline editing block
+    inlineEditingBlock.empty();
+    
+    //Crete new block without editing and add Legal name in to it
+    inlineEditingBlock.append('<div class="crm-clear crm-summary-block" style="margin-left: 4px;"></div>');
+    inlineEditingBlock.find('.crm-summary-block').append(legalNameRow);
   }
   
   /**
@@ -141,7 +187,21 @@ cj(function ($) {
     contactIdContainer.before(addressContainer);
   }
   
-  //Do modifications only id this Summary page is for Individual and not for Organisations or Household
+  /**
+  * Hide SIC code field
+  */
+  function hideSIC_CodeField() {
+    $('.crm-contact-sic_code').parent().remove();
+  }
+  
+  /**
+  * Move custom fields block to top
+  */
+  function moveCustomFieldsToTop() {
+    $('.contactTopBar').before($('#customFields'));
+  }
+  
+  //Do modifications only id this Summary page is for Individual or Organisations but not for Household
   if(isIndividualContactSummary()) {
     moveCommunicationPreferenceToAccordion();
     moveEmplyerAndJobTitleToAccordion();
@@ -152,5 +212,14 @@ cj(function ($) {
     moveDemographicsToTop();
     movePhoneContainerOneDown();
     moveAddressContainerOneDown();
+  }
+  else if(isOrganisationContactSummary()) {
+    moveCommunicationPreferenceToAccordion();
+    hideSIC_CodeField();
+    moveSourceFieldBelowContactId();
+    moveContactIdBlockToBottom();
+    addNicknameToHeaderName();
+    removeNicknameFormFieldAndInlineEditing();
+    moveCustomFieldsToTop();
   }
 });
