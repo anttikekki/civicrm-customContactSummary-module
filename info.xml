@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <extension key="com.github.anttikekki.customContactSummary" type="module">
-  <downloadUrl>https://github.com/anttikekki/civicrm-customContactSummary-module/archive/1.0.zip</downloadUrl>
+  <downloadUrl>https://github.com/anttikekki/civicrm-customContactSummary-module/archive/1.1.zip</downloadUrl>
   <file>customContactSummary</file>
   <name>Custom Contact Summary</name>
   <description>Alters Contact Summary by relocating and hiding fields</description>
@@ -15,8 +15,8 @@
     <author>Antti Kekki</author>
     <email>anttikekki@gmail.com</email>
   </maintainer>
-  <releaseDate>2014-03-20</releaseDate>
-  <version>1.0</version>
+  <releaseDate>2014-04-06</releaseDate>
+  <version>1.1</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>4.4</ver>
