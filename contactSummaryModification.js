@@ -120,7 +120,7 @@ cj(function ($) {
   function addNicknameToHeaderName() {
     var nameInfo = CRM.customContactSummary.contactNameInfo;
     
-    if(nameInfo.nick_name == 'null' || nameInfo.nick_name.length === 0) {
+    if(nameInfo.nick_name == 'null' || nameInfo.nick_name == null || nameInfo.nick_name.length === 0) {
       return;
     }
     
